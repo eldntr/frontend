@@ -7,6 +7,7 @@
 <body>
 <div class="container mt-5">
     <h2 class="mb-4">Products</h2>
+    <a href="{{ route('cart.index') }}" class="btn btn-info mb-3">View Cart</a>
     <div class="row">
         @foreach($products as $product)
             <div class="col-md-4 mb-4">
@@ -23,6 +24,10 @@
                         <p class="card-text"><strong>Stock:</strong> {{ $product->stock }}</p>
                         <p class="card-text"><strong>Category:</strong> {{ $product->category ? $product->category->name : 'No Category' }}</p>
                         <p class="card-text"><strong>Seller:</strong> {{ $product->seller ? $product->seller->name : 'Unknown' }}</p>
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
                     </div>
                 </div>
             </div>

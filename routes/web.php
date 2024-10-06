@@ -20,6 +20,10 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 use App\Http\Controllers\HomeController;
 Route::get('/product', [HomeController::class, 'index'])->name('product.index');
 
+use App\Http\Controllers\CartController;
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
 use App\Http\Controllers\ProductController;
 Route::resource('products', ProductController::class)->middleware('auth');
 

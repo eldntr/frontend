@@ -23,6 +23,7 @@ Route::get('/product', [HomeController::class, 'index'])->name('product.index');
 use App\Http\Controllers\CartController;
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
 use App\Http\Controllers\ProductController;
 Route::resource('products', ProductController::class)->middleware('auth');

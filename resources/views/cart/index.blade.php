@@ -26,6 +26,10 @@
                             <h5 class="card-title">{{ $details['name'] }}</h5>
                             <p class="card-text"><strong>Price:</strong> ${{ $details['price'] }}</p>
                             <p class="card-text"><strong>Quantity:</strong> {{ $details['quantity'] }}</p>
+                            <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
                         </div>
                     </div>
                 </div>

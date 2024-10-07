@@ -22,6 +22,20 @@
                         <p class="card-text"><strong>Price:</strong> ${{ $product->price }}</p>
                         <p class="card-text"><strong>Stock:</strong> {{ $product->stock }}</p>
                         <p class="card-text"><strong>Category:</strong> {{ $product->category ? $product->category->name : 'No Category' }}</p>
+
+                        <!-- Tombol Add to Cart -->
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-block">Add to Cart</button>
+                        </form>
+
+                        <!-- Tombol Buy Now -->
+                        <form action="{{ route('transactions.store') }}" method="POST" class="mt-2">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-success btn-block">Buy Now</button>
+                        </form> 
                     </div>
                 </div>
             </div>

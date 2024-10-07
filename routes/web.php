@@ -2,8 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('register.form');
 });
 
 use App\Http\Controllers\UserController;
@@ -28,5 +32,16 @@ Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.
 use App\Http\Controllers\ProductController;
 Route::resource('products', ProductController::class)->middleware('auth');
 
+
 use App\Http\Controllers\CategoryController;
 Route::resource('categories', CategoryController::class)->only(['store'])->middleware('auth');
+
+use App\Http\Controllers\TransactionController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+    Route::put('/transactions/{id}', [TransactionController::class, 'update'])->name('transactions.update');
+    Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+});

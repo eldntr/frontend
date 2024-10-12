@@ -46,3 +46,8 @@ use App\Http\Controllers\ReviewController;
 
 Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
 Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+use App\Http\Controllers\DiscussionController;
+
+Route::post('products/{product}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');
+Route::post('discussions/{discussion}/reply', [DiscussionController::class, 'reply'])->name('discussions.reply');

@@ -9,7 +9,7 @@
     <h2 class="mb-4">Your Products</h2>
     <a href="{{ route('products.create') }}" class="btn btn-success mb-3">Add Product</a>
     <table class="table table-bordered">
-        <thead>
+                <thead>
             <tr>
                 <th>Name</th>
                 <th>Description</th>

@@ -13,21 +13,22 @@
         </div>
     @endif
     <div class="row">
-        @if(count($cart) > 0)
-            @foreach($cart as $id => $details)
+        @if($cart && count($cart->items) > 0)
+            @foreach($cart->items as $item)
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        @if($details['image'])
-                            <img src="{{ asset('storage/' . $details['image']) }}" class="card-img-top" alt="{{ $details['name'] }}">
+                        @if($item->product->image)
+                            <img src="{{ asset('storage/' . $item->product->image) }}" class="card-img-top" alt="{{ $item->product->name }}">
                         @else
                             <img src="https://via.placeholder.com/150" class="card-img-top" alt="No Image">
                         @endif
                         <div class="card-body">
-                            <h5 class="card-title">{{ $details['name'] }}</h5>
-                            <p class="card-text"><strong>Price:</strong> ${{ $details['price'] }}</p>
-                            <p class="card-text"><strong>Quantity:</strong> {{ $details['quantity'] }}</p>
-                            <form action="{{ route('cart.remove', $id) }}" method="POST">
+                            <h5 class="card-title">{{ $item->product->name }}</h5>
+                            <p class="card-text"><strong>Price:</strong> ${{ $item->product->price }}</p>
+                            <p class="card-text"><strong>Quantity:</strong> {{ $item->quantity }}</p>
+                            <form action="{{ route('cart.remove', $item->id) }}" method="POST">
                                 @csrf
+                                @method('DELETE') <!-- Spoof DELETE method -->
                                 <button type="submit" class="btn btn-danger">Remove</button>
                             </form>
                         </div>

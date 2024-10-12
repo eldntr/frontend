@@ -2,26 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Product; // Import the Product model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CartController extends Controller
+class WishlistController extends Controller
 {
+    public function add(Request $request, $productId)
+    {
+        $user = Auth::user();
+        $user->wishlists()->attach($productId);
+
+        return redirect()->back()->with('success', 'Product added to wishlist!');
+    }
+
     public function index()
     {
         $user = Auth::user();
-        $cart = $user->carts()->with('items.product')->first();
+        $wishlists = $user->wishlists;
 
-        return view('cart.index', compact('cart'));
+        return view('wishlist.index', compact('wishlists'));
     }
 
-    public function add($productId)
+    public function moveToCart($productId)
     {
         $user = Auth::user();
-        $product = Product::findOrFail($productId); // Use the imported Product model
+        $user->wishlists()->detach($productId);
 
         // Check if the user already has a cart
         $cart = $user->carts()->firstOrCreate(['buyer_id' => $user->id]);
@@ -41,14 +49,6 @@ class CartController extends Controller
             $cart->items()->save($cartItem);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Product added to cart!');
-    }
-
-    public function remove($itemId)
-    {
-        $cartItem = CartItem::findOrFail($itemId);
-        $cartItem->delete();
-
-        return redirect()->route('cart.index')->with('success', 'Product removed from cart!');
+        return redirect()->route('cart.index')->with('success', 'Product moved to cart!');
     }
 }

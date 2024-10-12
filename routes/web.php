@@ -41,3 +41,8 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('/wishlist/move-to-cart/{product}', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
+
+use App\Http\Controllers\ReviewController;
+
+Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');

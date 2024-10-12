@@ -31,6 +31,7 @@
                         <form action="{{ route('wishlist.add', $product->id) }}" method="POST" style="display:inline-block; margin-top: 5px;">
                             @csrf
                             <button type="submit" class="btn btn-warning">Add to Wishlist</button>
+                        </form>
                     </div>
                 </div>
             </div>

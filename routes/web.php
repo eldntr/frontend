@@ -74,3 +74,5 @@ Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->n
 // Discussion Routes
 Route::post('products/{product}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');
 Route::post('discussions/{discussion}/reply', [DiscussionController::class, 'reply'])->name('discussions.reply');
+
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');

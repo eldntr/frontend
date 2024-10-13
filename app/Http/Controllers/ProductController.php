@@ -33,6 +33,9 @@ class ProductController extends Controller
             $query->where('seller_id', $sellerId);
         })->count();
 
+        //shippeditem
+        $shippedOrders = Order::with('orderItems.product')->where('status', 'shipped')->get();
+
         // Mendapatkan daftar produk milik seller
         $products = Product::where('seller_id', $sellerId)->get();
 
@@ -41,7 +44,7 @@ class ProductController extends Controller
             ->with('orderItems.product') // Load order items dan produk
             ->get();
 
-        return view('products.index', compact('products', 'totalProducts', 'totalSold', 'ordersInProcess', 'orders'));
+        return view('products.index', compact('products', 'totalProducts', 'totalSold', 'ordersInProcess', 'orders', 'shippedOrders'));
     }
 
 

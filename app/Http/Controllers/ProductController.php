@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,28 +14,35 @@ use App\Models\Transaction;
 
 class ProductController extends Controller
 {
-    public function index()
-{
-    $sellerId = Auth::id();
+        public function index(Request $request)
+    {
+        $sellerId = Auth::id();
 
-    // Hitung Total Produk
-    $totalProducts = Product::where('seller_id', $sellerId)->count();
+        // Hitung Total Produk
+        $totalProducts = Product::where('seller_id', $sellerId)->count();
 
-    // Hitung Total Terjual
-    $totalSold = Transaction::whereHas('product', function ($query) use ($sellerId) {
-        $query->where('seller_id', $sellerId);
-    })->where('status', 'completed')->sum('quantity');
+        // Hitung Total Terjual (produk yang telah dibeli dan status 'paid')
+        $totalSold = OrderItem::whereHas('order', function ($query) {
+            $query->where('status', 'paid');
+        })->whereHas('product', function ($query) use ($sellerId) {
+            $query->where('seller_id', $sellerId);
+        })->sum('quantity');
 
-    // Hitung Order yang Sedang Diproses
-    $ordersInProcess = Transaction::whereHas('product', function ($query) use ($sellerId) {
-        $query->where('seller_id', $sellerId);
-    })->where('status', 'pending')->count();
+        // Hitung Order yang Sedang Diproses (status 'pending')
+        $ordersInProcess = Order::where('status', 'paid')->whereHas('orderItems.product', function ($query) use ($sellerId) {
+            $query->where('seller_id', $sellerId);
+        })->count();
 
-    // Mendapatkan daftar produk milik seller
-    $products = Product::where('seller_id', $sellerId)->get();
+        // Mendapatkan daftar produk milik seller
+        $products = Product::where('seller_id', $sellerId)->get();
 
-    return view('products.index', compact('products', 'totalProducts', 'totalSold', 'ordersInProcess'));
-}
+        // Mendapatkan daftar orders yang sudah dibayar
+        $orders = Order::where('status', 'paid') // Ambil hanya yang sudah dibayar
+            ->with('orderItems.product') // Load order items dan produk
+            ->get();
+
+        return view('products.index', compact('products', 'totalProducts', 'totalSold', 'ordersInProcess', 'orders'));
+    }
 
 
     public function create()

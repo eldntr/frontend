@@ -97,6 +97,41 @@ class ProductController extends Controller
         return redirect()->route('products.index');
     }
 
+    public function setDiscount(Request $request, $id)
+    {
+        $request->validate([
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'new_price' => 'nullable|numeric|min:0',
+        ]);
+
+        $product = Product::where('id', $id)->where('seller_id', Auth::id())->firstOrFail();
+
+        if ($request->has('discount_percentage') && $request->input('discount_percentage') !== null) {
+            $discountedPrice = $product->price * ((100 - $request->input('discount_percentage')) / 100);
+            $product->price = $discountedPrice;
+        } elseif ($request->has('new_price') && $request->input('new_price') !== null) {
+            $product->price = $request->input('new_price');
+        }
+
+        $product->save();
+
+        return redirect()->back()->with('success', 'Discount has been applied successfully!');
+    }
+
+    public function manageStock(Request $request, $id)
+    {
+        $request->validate([
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $product = Product::where('id', $id)->where('seller_id', Auth::id())->firstOrFail();
+
+        $product->stock = $request->input('stock');
+        $product->save();
+
+        return redirect()->back()->with('success', 'Stock updated successfully!');
+    }
+
         public function show($id)
     {
         $product = Product::with('reviews.user')->findOrFail($id);

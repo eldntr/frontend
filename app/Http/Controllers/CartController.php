@@ -13,7 +13,17 @@ class CartController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login'); // Pastikan redirect hanya jika user belum login
+        }
+
         $cart = $user->carts()->with('items.product')->first();
+
+        foreach ($cart->items as $item) {
+            $product = $item->product;
+            $product->isWishlisted = $user ? $product->wishlistedBy->contains($user) : false;
+        }
 
         return view('cart.index', compact('cart'));
     }
@@ -42,6 +52,22 @@ class CartController extends Controller
         }
 
         return redirect()->route('cart.index')->with('success', 'Product added to cart!');
+    }
+    public function updateQuantity(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required|exists:cart_items,id',
+            'quantity' => 'required|integer|min:1', // Pastikan quantity minimal 1
+        ]);
+
+        $cartItem = CartItem::find($request->item_id);
+        $cartItem->quantity = $request->quantity;
+        $cartItem->save();
+
+        return response()->json([
+            'success' => true,
+            'totalPrice' => $cartItem->quantity * $cartItem->product->price, // Menghitung total harga
+        ]);
     }
 
     public function remove($itemId)

@@ -30,6 +30,12 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/');
+    }
+
     public function showRegisterForm()
     {
         return view('register');

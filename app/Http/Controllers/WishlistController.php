@@ -13,17 +13,37 @@ class WishlistController extends Controller
     public function add(Request $request, $productId)
     {
         $user = Auth::user();
-        $user->wishlists()->attach($productId);
-
-        return redirect()->back()->with('success', 'Product added to wishlist!');
+        if ($user->wishlists()->where('product_id', $productId)->exists()) {
+            // Hapus dari wishlist
+            $user->wishlists()->detach($productId);
+        } else {
+            $user->wishlists()->attach($productId);
+        }
+        return redirect()->back();
     }
 
     public function index()
     {
-        $user = Auth::user();
-        $wishlists = $user->wishlists;
+        $user = auth()->user();
+        $wishlisted = $user->wishlists()->with('category')->get();
 
-        return view('wishlist.index', compact('wishlists'));
+        return view('wishlist.index', compact('wishlisted'));
+    }
+
+    public function toggle(Product $product)
+    {
+    $user = auth()->user();
+
+    // Cek apakah produk sudah ada di wishlist user
+    if ($user->wishlist()->where('product_id', $product->id)->exists()) {
+        // Hapus dari wishlist
+        $user->wishlist()->detach($product->id);
+    } else {
+        // Tambahkan ke wishlist
+        $user->wishlist()->attach($product->id);
+    }
+
+    return back();
     }
 
     public function moveToCart($productId)

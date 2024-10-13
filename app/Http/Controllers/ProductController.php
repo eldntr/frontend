@@ -14,7 +14,7 @@ use App\Models\Transaction;
 
 class ProductController extends Controller
 {
-        public function index(Request $request)
+    public function index(Request $request)
     {
         $sellerId = Auth::id();
 
@@ -164,6 +164,25 @@ class ProductController extends Controller
         public function show($id)
     {
         $product = Product::with('reviews.user')->findOrFail($id);
-        return view('products.show', compact('product'));
+        $user = auth()->user();
+
+        $isWishlisted = $product->wishlistedBy->contains($user);
+        return view('products.show2', compact('product', 'isWishlisted'));
+    }
+
+    public function search(Request $request)
+    {
+        $user = auth()->user();
+        $searchTerm = $request->input('search');
+
+        \Log::info('Search term: ' . $searchTerm);
+
+        $products = Product::where('name', 'LIKE', '%' . $searchTerm . '%')->get();
+
+        foreach ($products as $product) {
+            $product->isWishlisted = $user ? $product->wishlistedBy->contains($user) : false;
+        }
+
+        return view('home', compact('products'));
     }
 }

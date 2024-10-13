@@ -15,8 +15,17 @@ use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\SellerDashboardController;
 
 Route::get('/', function () {
-    return redirect()->route('register.form');
+    return redirect()->route('product.index');
 });
+
+Route::get('/productoverview', function () {
+    return view('productoverview');
+});
+
+Route::get('/users/profile', function () {
+    return view('users.profile');
+});
+
 
 // User Routes
 Route::resource('users', UserController::class);
@@ -26,24 +35,31 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 // Home/Product Routes
-Route::get('/product', [HomeController::class, 'index'])->name('product.index');
-
-// Cart Routes
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove'); // Changed to POST method
+Route::get('/', [HomeController::class, 'index'])->name('product.index');
+Route::post('/category/{id}', [HomeController::class, 'categoryFilter'])->name('product.filter');
 
 // Product Routes
 Route::resource('products', ProductController::class)->middleware('auth');
-Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/products/search', [ProductController::class, 'search'])->name('product.search');
+
 
 // Category Routes
 Route::resource('categories', CategoryController::class)->only(['store'])->middleware('auth');
 
+
 // Transaction Routes
 Route::middleware(['auth'])->group(function () {
+    Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
+    // Cart Routes
+    Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::post('/checkout', [TransactionController::class, 'createOrder'])->name('checkout');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
@@ -63,7 +79,6 @@ Route::get('/payment/{order}', [PaymentController::class, 'show'])->name('paymen
 Route::post('/payment/process/{order}', [PaymentController::class, 'process'])->name('payment.process');
 
 // Wishlist Routes
-Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('/wishlist/move-to-cart/{product}', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
 Route::post('/payment/complete/{order}', [PaymentController::class, 'complete'])->name('payment.complete');

@@ -40,6 +40,11 @@ class TransactionController extends Controller
             ]);
         }
 
+        // kurangi stok
+        $product = Product::findOrFail($cartItem->product_id);
+        $product->stock -= $cartItem->quantity;
+        $product->save();
+        
         // Bersihkan cart setelah order dibuat
         $cart->items()->delete();
 

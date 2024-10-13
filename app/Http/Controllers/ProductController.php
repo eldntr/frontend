@@ -7,14 +7,34 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Transaction;
+
 
 class ProductController extends Controller
 {
     public function index()
-    {
-        $products = Product::where('seller_id', Auth::id())->get();
-        return view('products.index', compact('products'));
-    }
+{
+    $sellerId = Auth::id();
+
+    // Hitung Total Produk
+    $totalProducts = Product::where('seller_id', $sellerId)->count();
+
+    // Hitung Total Terjual
+    $totalSold = Transaction::whereHas('product', function ($query) use ($sellerId) {
+        $query->where('seller_id', $sellerId);
+    })->where('status', 'completed')->sum('quantity');
+
+    // Hitung Order yang Sedang Diproses
+    $ordersInProcess = Transaction::whereHas('product', function ($query) use ($sellerId) {
+        $query->where('seller_id', $sellerId);
+    })->where('status', 'pending')->count();
+
+    // Mendapatkan daftar produk milik seller
+    $products = Product::where('seller_id', $sellerId)->get();
+
+    return view('products.index', compact('products', 'totalProducts', 'totalSold', 'ordersInProcess'));
+}
+
 
     public function create()
     {

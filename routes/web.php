@@ -72,6 +72,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/seller/product/{id}/discount', [ProductController::class, 'setDiscount'])->name('seller.product.discount');
     Route::get('/seller/orders', [TransactionController::class, 'listOrders'])->name('seller.orders');
     Route::post('/seller/product/{id}/stock', [ProductController::class, 'manageStock'])->name('seller.product.stock');
+
+    // Review Routes
+    Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // Discussion Routes
+    Route::post('products/{product}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');
+    Route::post('discussions/{discussion}/reply', [DiscussionController::class, 'reply'])->name('discussions.reply');
 });
 
 // Payment routes
@@ -82,12 +89,5 @@ Route::post('/payment/process/{order}', [PaymentController::class, 'process'])->
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('/wishlist/move-to-cart/{product}', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
 Route::post('/payment/complete/{order}', [PaymentController::class, 'complete'])->name('payment.complete');
-
-// Review Routes
-Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-
-// Discussion Routes
-Route::post('products/{product}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');
-Route::post('discussions/{discussion}/reply', [DiscussionController::class, 'reply'])->name('discussions.reply');
 
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');

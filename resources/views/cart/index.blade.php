@@ -143,17 +143,23 @@
                   <dd class="text-base font-bold text-gray-900 dark:text-white">Rp.</dd>
                 </dl>
               </div>
-    
-              <a href="#" class="flex w-full items-center justify-center rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">Proceed to Checkout</a>
-    
-              <div class="flex items-center justify-center gap-2">
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> or </span>
-                <a href="/product" title="" class="inline-flex items-center gap-2 text-sm font-medium text-teal-700 underline hover:no-underline dark:text-teal-500">
-                  Continue Shopping
-                  <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4" />
-                  </svg>
-                </a>
+              <div class="flex flex-col items-center gap-4">
+                <form action="{{ route('checkout') }}" method="POST">
+                  @csrf
+                  <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-teal-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">
+                      Proceed to Checkout
+                  </button>
+                </form>
+            
+                <div class="flex items-center justify-center gap-2">
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> or </span>
+                    <a href="/" title="" class="inline-flex items-center gap-2 text-sm font-medium text-teal-700 underline hover:no-underline dark:text-teal-500">
+                        Continue Shopping
+                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4" />
+                        </svg>
+                    </a>
+                </div>
               </div>
             </div>
           </div>

@@ -1,101 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>CRUD User</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container mt-5">
-    <h2 class="mb-4">CRUD User</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($users as $user)
-                <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->role }}</td>
-                    <td>
-                        <form action="{{ route('users.destroy', $user->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                        <button class="btn btn-primary" onclick='editUser(@json($user))'>Edit</button>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <h2 class="mt-5">Add User</h2>
-    <form action="{{ route('users.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label>Name:</label>
-            <input type="text" name="name" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Password:</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Role:</label>
-            <select name="role" class="form-control" required>
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-                <option value="admin">Admin</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-success">Add</button>
-    </form>
-
-    <h2 class="mt-5">Edit User</h2>
-    <form id="editForm" action="" method="POST">
-        @csrf
-        @method('PUT')
-        <div class="form-group">
-            <label>Name:</label>
-            <input type="text" name="name" id="editName" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" id="editEmail" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label>Password:</label>
-            <input type="password" name="password" id="editPassword" class="form-control">
-        </div>
-        <div class="form-group">
-            <label>Role:</label>
-            <select name="role" id="editRole" class="form-control" required>
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-                <option value="admin">Admin</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Update</button>
-    </form>
-</div>
-
-<script>
-    function editUser(user) {
-        document.getElementById('editForm').action = `/users/${user.id}`;
-        document.getElementById('editName').value = user.name;
-        document.getElementById('editEmail').value = user.email;
-        document.getElementById('editRole').value = user.role;
-    }
-</script>
+<body class="bg-gray-100">
+    <x-navbar></x-navbar>
+    <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-4">Edit Profile</h2>
+        <form action="{{ route('users.update', auth()->user()) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Name:</label>
+                <input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" value="{{ auth()->user()->name }}" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Email:</label>
+                <input type="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" value="{{ auth()->user()->email }}" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Password:</label>
+                <input type="password" name="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" placeholder="Leave blank to keep current password">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Role:</label>
+                <select name="role" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" required>
+                    <option value="buyer" {{ auth()->user()->role == 'buyer' ? 'selected' : '' }}>Buyer</option>
+                    <option value="seller" {{ auth()->user()->role == 'seller' ? 'selected' : '' }}>Seller</option>
+                    <option value="admin" {{ auth()->user()->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Update Profile</button>
+        </form>
+    </div>
 </body>
 </html>

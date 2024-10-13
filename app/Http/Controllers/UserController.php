@@ -51,7 +51,7 @@ class UserController extends Controller
             $user->update(['password' => Hash::make($request->password)]);
         }
 
-        return redirect()->route('users.index');
+        return redirect()->route('product.index');
     }
 
     public function destroy(User $user)

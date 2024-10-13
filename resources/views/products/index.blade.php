@@ -1,85 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Products</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container mt-5">
-    <h1>Seller Dashboard</h1>
-    <p>Total Products: {{ $totalProducts }}</p>
-    <p>Total Sold: {{ $totalSold }}</p>
-    <p>Orders in Process: {{ $ordersInProcess }}</p>
-    
-    <h2 class="mb-4">Your Products</h2>
-    <a href="{{ route('products.create') }}" class="btn btn-success mb-3">Add Product</a>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Category</th>
-                <th>Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($products as $product)
-                <tr>
-                    <td>{{ $product->name }}</td>
-                    <td>{{ $product->description }}</td>
-                    <td>{{ $product->price }}</td>
-                    <td>{{ $product->stock }}</td>
-                    <td>{{ $product->category ? $product->category->name : 'No Category' }}</td>
-                    <td>
-                        @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" width="100">
-                        @else
-                            No Image
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary">Edit</a>
-                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+<body class="bg-gray-100">
+    <x-navbar></x-navbar>
 
-    <h2 class="mt-5 mb-4">Orders that Have Been Paid</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID Order</th>
-                <th>Total</th>
-                <th>Created At</th>
-                <th>Detail</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($orders as $order)
-            <tr>
-                <td>{{ $order->id }}</td>
-                <td>{{ $order->total }}</td>
-                <td>{{ $order->created_at }}</td>
-                <td>
-                    <ul>
-                        @foreach($order->orderItems as $item)
-                        <li>{{ $item->product->name }} ({{ $item->quantity }} pcs)</li>
-                        @endforeach
-                    </ul>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+    <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+        <h1 class="text-3xl font-bold">Seller Dashboard</h1>
+        <p class="mt-2">Total Products: <span class="font-semibold">{{ $totalProducts }}</span></p>
+        <p>Total Sold: <span class="font-semibold">{{ $totalSold }}</span></p>
+        <p>Orders in Process: <span class="font-semibold">{{ $ordersInProcess }}</span></p>
+        
+        <h2 class="mt-6 text-xl font-semibold mb-4">Your Products</h2>
+        <a href="{{ route('products.create') }}" class="inline-block bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Add Product</a>
+
+        <div class="overflow-x-auto mt-4">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($products as $product)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $product->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $product->description }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $product->price }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $product->stock }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $product->category ? $product->category->name : 'No Category' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" width="100">
+                                @else
+                                    No Image
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{{ route('products.edit', $product->id) }}" class="text-blue-600 hover:text-blue-800">Edit</a>
+                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800 ml-2">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="mt-6 text-xl font-semibold mb-4">Orders that Have Been Paid</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Order</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($orders as $order)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $order->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $order->total }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $order->created_at }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <ul>
+                                    @foreach($order->orderItems as $item)
+                                        <li>{{ $item->product->name }} ({{ $item->quantity }} pcs)</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>

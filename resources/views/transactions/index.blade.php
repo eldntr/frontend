@@ -2,9 +2,11 @@
 <html>
 <head>
     <title>Your Transactions</title>
+    @vite(['resources/css/app.css','resources/js/app.js'])
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<x-navbar></x-navbar>
 <div class="container mt-5">
     <h2 class="mb-4">Your Transactions</h2>
 

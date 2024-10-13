@@ -35,6 +35,13 @@
                     </div>
                 </div>
             @endforeach
+            <!-- Tambahkan Tombol Checkout di Bawah -->
+            <div class="col-md-12">
+                <form action="{{ route('checkout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-block">Checkout</button>
+                </form>
+            </div>
         @else
             <div class="col-12">
                 <p>Your cart is empty.</p>

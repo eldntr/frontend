@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\DiscussionController;
@@ -44,6 +45,7 @@ Route::resource('categories', CategoryController::class)->only(['store'])->middl
 // Transaction Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/checkout', [TransactionController::class, 'createOrder'])->name('checkout');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::put('/transactions/{id}', [TransactionController::class, 'update'])->name('transactions.update');
@@ -56,10 +58,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/seller/product/{id}/stock', [ProductController::class, 'manageStock'])->name('seller.product.stock');
 });
 
+// Payment routes
+Route::get('/payment/{order}', [PaymentController::class, 'show'])->name('payment.show');
+Route::post('/payment/process/{order}', [PaymentController::class, 'process'])->name('payment.process');
+
 // Wishlist Routes
 Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('/wishlist/move-to-cart/{product}', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
+Route::post('/payment/complete/{order}', [PaymentController::class, 'complete'])->name('payment.complete');
 
 // Review Routes
 Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');

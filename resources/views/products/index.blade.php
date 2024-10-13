@@ -10,10 +10,11 @@
     <p>Total Products: {{ $totalProducts }}</p>
     <p>Total Sold: {{ $totalSold }}</p>
     <p>Orders in Process: {{ $ordersInProcess }}</p>
+    
     <h2 class="mb-4">Your Products</h2>
     <a href="{{ route('products.create') }}" class="btn btn-success mb-3">Add Product</a>
     <table class="table table-bordered">
-                <thead>
+        <thead>
             <tr>
                 <th>Name</th>
                 <th>Description</th>
@@ -48,6 +49,34 @@
                         </form>
                     </td>
                 </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <h2 class="mt-5 mb-4">Orders that Have Been Paid</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID Order</th>
+                <th>Total</th>
+                <th>Created At</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($orders as $order)
+            <tr>
+                <td>{{ $order->id }}</td>
+                <td>{{ $order->total }}</td>
+                <td>{{ $order->created_at }}</td>
+                <td>
+                    <ul>
+                        @foreach($order->orderItems as $item)
+                        <li>{{ $item->product->name }} ({{ $item->quantity }} pcs)</li>
+                        @endforeach
+                    </ul>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

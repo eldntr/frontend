@@ -59,4 +59,16 @@ class TransactionController extends Controller
         $transaction->delete();
         return redirect()->back()->with('success', 'Transaction deleted successfully');
     }
+
+    //list order
+    public function listOrders()
+    {
+        $sellerId = Auth::id();
+
+        $orders = Transaction::whereHas('product', function ($query) use ($sellerId) {
+            $query->where('seller_id', $sellerId);
+        })->get();
+
+        return view('seller.orders', compact('orders'));
+    }
 }

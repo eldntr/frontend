@@ -20,12 +20,17 @@ class CartController extends Controller
 
         $cart = $user->carts()->with('items.product')->first();
 
+        $original_price = 0;
+
         foreach ($cart->items as $item) {
             $product = $item->product;
             $product->isWishlisted = $user ? $product->wishlistedBy->contains($user) : false;
+            $original_price += $product->price * $item->quantity;
         }
 
-        return view('cart.index', compact('cart'));
+        $total = $original_price - 0;
+
+        return view('cart.index', compact('cart', 'original_price', 'total'));
     }
 
     public function add($productId)
@@ -76,5 +81,21 @@ class CartController extends Controller
         $cartItem->delete();
 
         return redirect()->route('cart.index')->with('success', 'Product removed from cart!');
+    }
+
+    public function decrementQuantity($itemId)
+    {
+        $cartItem = CartItem::findOrFail($itemId);
+        $cartItem->decrement('quantity', 1);
+
+        return redirect()->route('cart.index');
+    }
+
+    public function incrementQuantity($itemId)
+    {
+        $cartItem = CartItem::findOrFail($itemId);
+        $cartItem->increment('quantity', 1);
+
+        return redirect()->route('cart.index');
     }
 }

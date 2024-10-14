@@ -74,17 +74,27 @@
                       <label for="counter-input" class="sr-only">Choose quantity:</label>
                       <div class="flex items-center justify-between md:order-3 md:justify-end">
                           <div class="flex items-center">
-                              <button type="button" id="decrement-button" data-input-counter-decrement="counter-input" class="decrement-button inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
-                                  <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                  </svg>
+                            <form action="{{ route('cart.decrementQuantity', $item->id) }}" method="POST">
+                              @csrf
+                              <button type="submit" id="decrement-button"
+                              @if ($item->quantity <= 1)
+                                disabled
+                              @endif  
+                              class="decrement-button inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
+                                <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                </svg>
                               </button>
+                            </form>
                               <input type="text" id="counter-input" data-input-counter class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white" placeholder="" value="{{ $item->quantity }}" required />
-                              <button type="button" id="increment-button" data-input-counter-increment="counter-input" class="increment-button inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
+                            <form action="{{ route('cart.incrementQuantity', $item->id) }}" method="POST">  
+                              @csrf
+                              <button type="submit" id="increment-button" class="increment-button inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700">
                                   <svg class="h-2.5 w-2.5 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                   </svg>
                               </button>
+                            </form>
                           </div>
                           <div class="text-end md:order-4 md:w-32">
                           <p class="text-base font-bold text-gray-900 dark:text-white">Rp.{{ $item->product->price * $item->quantity }}</p>
@@ -129,18 +139,18 @@
                 <div class="space-y-2">
                   <dl class="flex items-center justify-between gap-4">
                     <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Original price</dt>
-                    <dd class="text-base font-medium text-gray-900 dark:text-white">Rp.</dd>
+                    <dd class="text-base font-medium text-gray-900 dark:text-white">Rp.{{ $original_price }}</dd>
                   </dl>
     
                   <dl class="flex items-center justify-between gap-4">
                     <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Savings</dt>
-                    <dd class="text-base font-medium text-green-600">-Rp.</dd>
+                    <dd class="text-base font-medium text-green-600">-Rp.0</dd>
                   </dl>
                 </div>
     
                 <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
                   <dt class="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-                  <dd class="text-base font-bold text-gray-900 dark:text-white">Rp.</dd>
+                  <dd class="text-base font-bold text-gray-900 dark:text-white">Rp.{{ $total }}</dd>
                 </dl>
               </div>
               <div class="flex flex-col items-center gap-4">

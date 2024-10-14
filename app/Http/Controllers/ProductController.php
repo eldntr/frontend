@@ -21,9 +21,10 @@ class ProductController extends Controller
         // Hitung Total Produk
         $totalProducts = Product::where('seller_id', $sellerId)->count();
 
-        // Hitung Total Terjual (produk yang telah dibeli dan status 'paid')
+        // Hitung Total Terjual (produk yang telah dibeli dan status 'paid' atau 'shipped')
         $totalSold = OrderItem::whereHas('order', function ($query) {
-            $query->where('status', 'paid');
+        // Menggunakan whereIn untuk memeriksa dua status
+            $query->whereIn('status', ['paid', 'shipped']);
         })->whereHas('product', function ($query) use ($sellerId) {
             $query->where('seller_id', $sellerId);
         })->sum('quantity');

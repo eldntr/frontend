@@ -110,11 +110,36 @@ class TransactionController extends Controller
     public function listOrders()
     {
         $sellerId = Auth::id();
-
-        $orders = Transaction::whereHas('product', function ($query) use ($sellerId) {
+    
+        // Ambil order yang sudah dibayar dan belum terkirim
+        $orders = Order::whereHas('orderItems.product', function ($query) use ($sellerId) {
             $query->where('seller_id', $sellerId);
-        })->get();
-
-        return view('seller.orders', compact('orders'));
+        })->where('status', 'paid')->get();
+    
+        // Ambil order yang sudah terkirim
+        $shippedOrders = Order::whereHas('orderItems.product', function ($query) use ($sellerId) {
+            $query->where('seller_id', $sellerId);
+        })->where('status', 'shipped')->get();
+    
+        return view('products.index', compact('orders', 'shippedOrders'));
     }
+    
+    
+    //tanda terkirim
+    public function markAsShipped($id)
+    {
+        $order = Order::findOrFail($id);
+    
+        // Cek apakah order dapat diproses
+        if ($order->status === 'paid') {
+            $order->status = 'shipped'; // Update status menjadi 'shipped'
+            $order->save();
+            return redirect()->route('products.index')->with('success', 'Order marked as shipped successfully.');
+        }
+    
+        return redirect()->back()->with('error', 'Order cannot be marked as shipped.');
+    }
+    
+    
+
 }

@@ -93,3 +93,4 @@ Route::post('/wishlist/move-to-cart/{product}', [WishlistController::class, 'mov
 Route::post('/payment/complete/{order}', [PaymentController::class, 'complete'])->name('payment.complete');
 
 Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/orders/{id}/mark-as-shipped', [TransactionController::class, 'markAsShipped'])->name('orders.markAsShipped');

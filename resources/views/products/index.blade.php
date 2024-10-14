@@ -12,10 +12,25 @@
 
     <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow">
         <h1 class="text-3xl font-bold">Seller Dashboard</h1>
-        <p class="mt-2">Total Products: <span class="font-semibold">{{ $totalProducts }}</span></p>
-        <p>Total Sold: <span class="font-semibold">{{ $totalSold }}</span></p>
-        <p>Orders in Process: <span class="font-semibold">{{ $ordersInProcess }}</span></p>
-        
+        <p class="mt-2">Hi, {{ Auth::user()->name }}!</p> <!-- Ganti dengan nama seller -->
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+            <div class="bg-green-100 border border-green-300 rounded-lg p-4 text-center shadow">
+                <h2 class="text-lg font-semibold">Total Products</h2>
+                <p class="text-2xl font-bold">{{ $totalProducts }}</p>
+            </div>
+
+            <div class="bg-blue-100 border border-blue-300 rounded-lg p-4 text-center shadow">
+                <h2 class="text-lg font-semibold">Total Sold</h2>
+                <p class="text-2xl font-bold">{{ $totalSold }}</p>
+            </div>
+
+            <div class="bg-yellow-100 border border-yellow-300 rounded-lg p-4 text-center shadow">
+                <h2 class="text-lg font-semibold">Orders in Process</h2>
+                <p class="text-2xl font-bold">{{ $ordersInProcess }}</p>
+            </div>
+        </div>
+
         <h2 class="mt-6 text-xl font-semibold mb-4">Your Products</h2>
         <a href="{{ route('products.create') }}" class="inline-block bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Add Product</a>
 

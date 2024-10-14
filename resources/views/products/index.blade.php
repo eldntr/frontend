@@ -70,6 +70,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -84,6 +85,50 @@
                                         <li>{{ $item->product->name }} ({{ $item->quantity }} pcs)</li>
                                     @endforeach
                                 </ul>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($order->status === 'paid')
+                                    <form action="{{ route('orders.markAsShipped', $order->id) }}" method="POST" style="display:inline-block;">
+                                        @csrf
+                                        <button type="submit" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Mark as Shipped</button>
+                                    </form>
+                                @else
+                                    <span class="text-yellow-500">Perlu Diproses</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="mt-6 text-xl font-semibold mb-4">Orders that Have Shipped</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Order</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($shippedOrders as $shippedOrder)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $shippedOrder->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $shippedOrder->total }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $shippedOrder->created_at }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <ul>
+                                    @foreach($shippedOrder->orderItems as $item)
+                                        <li>{{ $item->product->name }} ({{ $item->quantity }} pcs)</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-green-500">Terkirim</span>
                             </td>
                         </tr>
                     @endforeach

@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-
     public function createOrder(Request $request)
     {
         // Ambil user yang sedang login
@@ -32,6 +31,24 @@ class TransactionController extends Controller
 
         // Pindahkan setiap item dari cart ke order
         foreach ($cart->items as $cartItem) {
+            // Cari produk berdasarkan ID item dari cart
+            $product = Product::find($cartItem->product_id);
+
+            // Jika produk tidak ditemukan
+            if (!$product) {
+                return redirect()->back()->with('error', 'Product not found.');
+            }
+
+            // Cek apakah stok cukup
+            if ($product->stock < $cartItem->quantity) {
+                return redirect()->back()->with('error', 'Not enough stock for product: ' . $product->name);
+            }
+
+            // Kurangi stok
+            $product->stock -= $cartItem->quantity;
+            $product->save();
+
+            // Simpan item order
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $cartItem->product_id,
@@ -40,16 +57,12 @@ class TransactionController extends Controller
             ]);
         }
 
-        // kurangi stok
-        $product = Product::findOrFail($cartItem->product_id);
-        $product->stock -= $cartItem->quantity;
-        $product->save();
-        
         // Bersihkan cart setelah order dibuat
         $cart->items()->delete();
 
         return redirect()->route('transactions.index')->with('success', 'Order berhasil dibuat');
     }
+
     // Menampilkan semua transaksi
     public function index()
     {
@@ -68,8 +81,7 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail
-        (id: $request->product_id);
+        $product = Product::findOrFail($request->product_id);
         $totalPrice = $product->price * $request->quantity;
 
         $transaction = Transaction::create([
@@ -106,7 +118,7 @@ class TransactionController extends Controller
         return redirect()->back()->with('success', 'Transaction deleted successfully');
     }
 
-    //list order
+    // List order
     public function listOrders()
     {
         $sellerId = Auth::id();
@@ -123,9 +135,8 @@ class TransactionController extends Controller
     
         return view('products.index', compact('orders', 'shippedOrders'));
     }
-    
-    
-    //tanda terkirim
+
+    // Tanda terkirim
     public function markAsShipped($id)
     {
         $order = Order::findOrFail($id);
@@ -139,7 +150,4 @@ class TransactionController extends Controller
     
         return redirect()->back()->with('error', 'Order cannot be marked as shipped.');
     }
-    
-    
-
 }

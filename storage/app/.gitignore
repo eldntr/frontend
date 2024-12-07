@@ -4,4 +4,10 @@
 !.gitignore
 !storage/
 !storage/app/
+!storage/app/public/*
+!private/
+!public/
+!.gitignore
+!storage/
+!storage/app/
 !storage/app/public/

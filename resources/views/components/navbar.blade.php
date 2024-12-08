@@ -116,13 +116,41 @@
       </div> --}}
 
       {{-- Search Input --}}
-    <form action="{{ route('product.search') }}" method="GET" id="search-form">
-        <div class="relative w-full hidden bg-white shadow-xl" id="search-content">
-            <div class="container mx-auto py-4 text-black">
-                <input id="search" type="search" name="search" placeholder="Search..." autofocus="autofocus" class="w-full rounded-lg text-teal-800 transition focus:outline-none focus:border-transparent p-2 appearance-none leading-normal text-xl lg:text-2xl" required>
-            </div>
+    <div class="relative w-full hidden bg-white shadow-xl" id="search-content">
+        <div class="container mx-auto py-4 text-black">
+            <input id="search" type="search" name="search" placeholder="Search..." autofocus="autofocus" 
+                class="w-full rounded-lg text-teal-800 transition focus:outline-none focus:border-transparent p-2 appearance-none leading-normal text-xl lg:text-2xl" 
+                required>
+            <div id="search-results" class="mt-2"></div>
         </div>
-    </form>
+    </div>
+
+    <script>
+        document.getElementById('search').addEventListener('input', function(e) {
+            const query = e.target.value;
+            if (query.length > 2) {  // Search after 2 characters
+                fetch(`http://localhost:8080/products/search?name=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultsDiv = document.getElementById('search-results');
+                        resultsDiv.innerHTML = '';
+                        
+                        data.forEach(product => {
+                            const productDiv = document.createElement('div');
+                            productDiv.className = 'p-2 hover:bg-gray-100 cursor-pointer flex items-center';
+                            productDiv.innerHTML = `
+                                <a href="/products/${product.id}" class="flex items-center w-full">
+                                    <img src="${product.image}" alt="${product.name}" class="w-10 h-10 object-cover mr-2">
+                                    <div class="text-sm font-medium text-gray-900">${product.name}</div>
+                                </a>
+                            `;
+                            resultsDiv.appendChild(productDiv);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
 
     </div>
 

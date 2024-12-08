@@ -199,21 +199,46 @@ class ProductController extends Controller
             $productData = $response->json();
             $user = auth()->user();
 
-            // Fetch reviews from Go API
+            // Fetch reviews
             $reviewsResponse = Http::get("http://localhost:8080/reviewsproduct/{$id}");
-            
             if ($reviewsResponse->successful()) {
                 $reviews = $reviewsResponse->json();
-
-                // Attach user information to each review
                 $productData['reviews'] = array_map(function($review) {
                     $user = User::find($review['user_id']);
                     $review['user'] = ['name' => $user ? $user->name : 'Unknown'];
                     return $review;
                 }, $reviews);
             } else {
-                \Log::error("Failed to fetch reviews from API: " . $reviewsResponse->body());
                 $productData['reviews'] = [];
+            }
+
+            // Fetch discussions with replies
+            $discussionsResponse = Http::get("http://localhost:8080/product/{$id}/discussions");
+            if ($discussionsResponse->successful()) {
+                $discussions = $discussionsResponse->json();
+                
+                // Process discussions and their replies
+                $productData['discussions'] = array_map(function($discussion) {
+                    // Get discussion author
+                    $discussionUser = User::find($discussion['user_id']);
+                    $discussion['user'] = ['name' => $discussionUser ? $discussionUser->name : 'Unknown'];
+                    
+                    // Process replies if they exist
+                    if (!empty($discussion['replies'])) {
+                        $discussion['replies'] = array_map(function($reply) {
+                            $replyUser = User::find($reply['user_id']);
+                            $reply['user'] = ['name' => $replyUser ? $replyUser->name : 'Unknown'];
+                            return $reply;
+                        }, $discussion['replies']);
+                    } else {
+                        $discussion['replies'] = [];
+                    }
+                    
+                    return $discussion;
+                }, $discussions);
+            } else {
+                \Log::error("Failed to fetch discussions: " . $discussionsResponse->body());
+                $productData['discussions'] = [];
             }
 
             $isWishlisted = false;

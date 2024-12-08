@@ -142,28 +142,40 @@
           @if(isset($productData['discussions']) && !empty($productData['discussions']))
               @foreach($productData['discussions'] as $discussion)
                   <div class="mb-4 p-4 border border-gray-200 rounded-md">
-                      <h5 class="font-bold">{{ $discussion['user']['name'] }} <small class="text-gray-500">{{ \Carbon\Carbon::parse($discussion['created_at'])->format('M Y') }}</small></h5>
+                      <h5 class="font-bold">{{ $discussion['user']['name'] }} 
+                          <small class="text-gray-500">{{ \Carbon\Carbon::parse($discussion['created_at'])->format('M d, Y H:i') }}</small>
+                      </h5>
                       <p class="mt-2">{{ $discussion['content'] }}</p>
-                      <button class="btn btn-link" onclick="toggleReplies({{ $discussion['id'] }})">Lihat Balasan</button>
-                      <div id="replies-{{ $discussion['id'] }}" style="display: none;">
-                          @foreach($discussion['replies'] as $reply)
-                              <div class="mt-2 p-2 border border-gray-200 rounded-md">
-                                  <h6 class="font-bold">{{ $reply['user']['name'] }} <small class="text-gray-500">{{ \Carbon\Carbon::parse($reply['created_at'])->format('M Y') }}</small></h6>
-                                  <p>{{ $reply['content'] }}</p>
-                              </div>
-                          @endforeach
-                          <form action="{{ route('discussions.reply', $discussion['id']) }}" method="POST" class="mt-2">
+                      
+                      <!-- Replies section -->
+                      <div class="ml-8 mt-4">
+                          @if(isset($discussion['replies']) && !empty($discussion['replies']))
+                              @foreach($discussion['replies'] as $reply)
+                                  <div class="p-3 mb-2 bg-gray-50 rounded-md">
+                                      <h6 class="font-bold">{{ $reply['user']['name'] }}
+                                          <small class="text-gray-500">{{ \Carbon\Carbon::parse($reply['created_at'])->format('M d, Y H:i') }}</small>
+                                      </h6>
+                                      <p class="mt-1">{{ $reply['content'] }}</p>
+                                  </div>
+                              @endforeach
+                          @endif
+
+                          <!-- Reply form -->
+                          <form action="{{ route('discussions.reply', $discussion['id']) }}" method="POST" class="mt-3">
                               @csrf
-                              <div class="form-group">
-                                  <textarea name="content" class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" placeholder="Isi komentar disini..." required></textarea>
+                              <div class="flex gap-2">
+                                  <input type="text" name="content" class="flex-1 p-2 border border-gray-300 rounded-md" 
+                                         placeholder="Write a reply..." required>
+                                  <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">
+                                      Reply
+                                  </button>
                               </div>
-                              <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Balas</button>
                           </form>
                       </div>
                   </div>
               @endforeach
           @else
-              <p class="text-gray-500 dark:text-gray-400">No discussions yet.</p>
+              <p class="text-gray-500">No discussions yet.</p>
           @endif
 
           <h2 class="text-2xl font-semibold mt-8 mb-4 dark:text-white">Tambah Pertanyaan</h2>

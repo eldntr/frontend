@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Discussion;
-use App\Models\Reply;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 
 class DiscussionController extends Controller
 {
@@ -14,13 +14,17 @@ class DiscussionController extends Controller
             'content' => 'required',
         ]);
 
-        Discussion::create([
-            'product_id' => $productId,
-            'user_id' => auth()->id(),
-            'content' => $request->content,
+        $response = Http::post('http://localhost:8080/discussions', [
+            'product_id' => (int)$productId,
+            'user_id' => Auth::id(),
+            'content' => $request->content
         ]);
 
-        return redirect()->back();
+        if (!$response->successful()) {
+            return redirect()->back()->with('error', 'Failed to create discussion');
+        }
+
+        return redirect()->back()->with('success', 'Discussion created successfully');
     }
 
     public function reply(Request $request, $discussionId)
@@ -29,12 +33,15 @@ class DiscussionController extends Controller
             'content' => 'required',
         ]);
 
-        Reply::create([
-            'discussion_id' => $discussionId,
-            'user_id' => auth()->id(),
-            'content' => $request->content,
+        $response = Http::post("http://localhost:8080/discussions/{$discussionId}/reply", [
+            'user_id' => Auth::id(),
+            'content' => $request->content
         ]);
 
-        return redirect()->back();
+        if (!$response->successful()) {
+            return redirect()->back()->with('error', 'Failed to create reply');
+        }
+
+        return redirect()->back()->with('success', 'Reply posted successfully');
     }
 }

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Http;
-
+use App\Models\User; // Added import for User model
 
 class ProductController extends Controller
 {
@@ -188,19 +188,74 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $response = Http::get("http://localhost:8080/products/{$id}");
+        try {
+            $response = Http::get("http://localhost:8080/products/{$id}");
+            
+            if (!$response->successful()) {
+                \Log::error("Failed to fetch product data from API: " . $response->body());
+                abort(500, 'Failed to fetch product data.');
+            }
 
-        if ($response->successful()) {
             $productData = $response->json();
             $user = auth()->user();
 
-            // Assuming the API response includes wishlistedBy and discussions data
-            $isWishlisted = $user ? in_array($user->id, array_column($productData['wishlistedBy'], 'id')) : false;
+            // Fetch reviews from Go API
+            $reviewsResponse = Http::get("http://localhost:8080/reviewsproduct/{$id}");
+            
+            if ($reviewsResponse->successful()) {
+                $reviews = $reviewsResponse->json();
+
+                // Attach user information to each review
+                $productData['reviews'] = array_map(function($review) {
+                    $user = User::find($review['user_id']);
+                    $review['user'] = ['name' => $user ? $user->name : 'Unknown'];
+                    return $review;
+                }, $reviews);
+            } else {
+                \Log::error("Failed to fetch reviews from API: " . $reviewsResponse->body());
+                $productData['reviews'] = [];
+            }
+
+            $isWishlisted = false;
 
             return view('products.show', compact('productData', 'isWishlisted'));
+        } catch (\Exception $e) {
+            \Log::error("An error occurred in show method: " . $e->getMessage());
+            abort(500, 'An unexpected error occurred.');
+        }
+    }
+
+    public function storeReview(Request $request, $productId)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string',
+        ]);
+
+        // Convert the data types to match Go API expectations
+        $reviewData = [
+            'product_id' => (int)$productId,
+            'user_id' => (int)Auth::id(),
+            'rating' => (int)$request->rating,
+            'comment' => (string)$request->comment,
+        ];
+
+        // Log the request data
+        \Log::info('Sending review data to API:', $reviewData);
+
+        $response = Http::post('http://localhost:8080/reviews', $reviewData);
+
+        // Log the response
+        \Log::info('API Response:', [
+            'status' => $response->status(),
+            'body' => $response->body()
+        ]);
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Review added successfully!');
         }
 
-        abort(404, 'Product not found');
+        return redirect()->back()->with('error', 'Failed to add review. ' . $response->body());
     }
 
     public function search(Request $request)

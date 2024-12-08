@@ -47,6 +47,8 @@ Route::resource('products', ProductController::class)->middleware('auth');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/products/search', [ProductController::class, 'search'])->name('product.search');
 
+// Changed from products.storeReview to reviews.store to match the form
+Route::post('/products/{product}/reviews', [ProductController::class, 'storeReview'])->name('reviews.store');
 
 // Category Routes
 Route::resource('categories', CategoryController::class)->only(['store'])->middleware('auth');
@@ -76,7 +78,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/seller/product/{id}/stock', [ProductController::class, 'manageStock'])->name('seller.product.stock');
 
     // Review Routes
-    Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    // Route::post('products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
     // Discussion Routes
     Route::post('products/{product}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');

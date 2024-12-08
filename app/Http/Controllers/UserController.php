@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
 {
@@ -33,23 +34,41 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, $userID)
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,',
             'role' => 'required|in:buyer,seller,admin',
         ]);
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-        ]);
-
         if ($request->password) {
-            $user->update(['password' => Hash::make($request->password)]);
+            $data = ([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'role' => $request->role,
+            ]);
+        } else {
+            $data = ([
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+            ]);
         }
+
+        $response = Http::put("http://localhost:8080/users/{$userID}", $data);
+        if ($response->failed()) {
+            dd([
+                'url' => "http://localhost:8080/users/{$userID}",
+                'data' => $data,
+                'response' => $response->body(),
+                'status' => $response->status(),
+            ]);
+        }
+        
+        $newUserProfile = $response->json();
+        \Session::put('user', $newUserProfile);
 
         return redirect()->route('product.index');
     }

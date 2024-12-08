@@ -26,7 +26,7 @@
             </button>
           </a>
           
-          @auth
+          @if (session('token'))
             <button id="userDropdownButton1" data-dropdown-toggle="userDropdown1" type="button" class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
               <svg class="w-5 h-5 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-width="2" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
@@ -52,7 +52,7 @@
                   Wishlist 
                   </a>
                 </li>
-                @if (auth()->user()->role === 'seller')
+                @if (session('user')['role'] === 'seller')
                   <li><a href="{{ route('products.index') }}" title="" class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"> 
                     My Products
                     </a>
@@ -86,7 +86,7 @@
                   Register
                 </a>
             </div>
-          @endauth
+          @endif
           {{-- Account Button --}}
           
 

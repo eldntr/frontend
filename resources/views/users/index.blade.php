@@ -11,16 +11,16 @@
     <x-navbar></x-navbar>
     <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow">
         <h2 class="text-2xl font-bold mb-4">Edit Profile</h2>
-        <form action="{{ route('users.update', auth()->user()) }}" method="POST">
+        <form action="{{ route('users.update', session('user')['id']) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Name:</label>
-                <input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" value="{{ auth()->user()->name }}" required>
+                <input type="text" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" value="{{ session('user')['name'] }}" required>
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Email:</label>
-                <input type="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" value="{{ auth()->user()->email }}" required>
+                <input type="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" value="{{ session('user')['email'] }}" required>
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Password:</label>
@@ -29,9 +29,9 @@
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Role:</label>
                 <select name="role" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" required>
-                    <option value="buyer" {{ auth()->user()->role == 'buyer' ? 'selected' : '' }}>Buyer</option>
-                    <option value="seller" {{ auth()->user()->role == 'seller' ? 'selected' : '' }}>Seller</option>
-                    <option value="admin" {{ auth()->user()->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="buyer" {{ session('user')['role'] == 'buyer' ? 'selected' : '' }}>Buyer</option>
+                    <option value="seller" {{ session('user')['role'] == 'seller' ? 'selected' : '' }}>Seller</option>
+                    <option value="admin" {{ session('user')['role'] == 'admin' ? 'selected' : '' }}>Admin</option>
                 </select>
             </div>
             <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Update Profile</button>

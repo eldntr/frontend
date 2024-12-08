@@ -39,21 +39,21 @@ class AuthController extends Controller
         
         $userProfile = $response->json();
 
-        $user = User::updateOrCreate(
-            ['email' => $userProfile['email']],
-            [
-                'name' => $userProfile['name'],
-                'role' => $userProfile['role'],
-                'password' => $userProfile['password']
-            ]
-        );
+        //  $user = User::updateOrCreate(
+        //     ['email' => $userProfile['email']],
+        //     [
+        //         'name' => $userProfile['name'],
+        //         'role' => $userProfile['role'],
+        //         'password' => $userProfile['password']
+        //     ]
+        // );
 
-        // session([
-        //     'token' => $token,
-        //     'user' => $userProfile
-        // ]);
+        session([
+            'token' => $token,
+            'user' => $userProfile
+        ]);
 
-        Auth::login($user);
+        // Auth::login($user);
 
         return redirect()->route('product.index');
 
@@ -80,13 +80,20 @@ class AuthController extends Controller
             'role' => 'required|in:buyer,seller,admin',
         ]);
 
-        User::create([
+        $data = ([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'role' => $request->role,
         ]);
 
+        $response = Http::post('http://localhost:8080/auth/signup', $data);
+        if ($response->failed()) {
+            return back()->withErrors([
+                'error' => 'Error from backend.',
+            ]);
+        } 
+        
         return redirect()->route('login.form');
     }
 }

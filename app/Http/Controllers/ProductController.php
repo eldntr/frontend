@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Http;
 
 
 class ProductController extends Controller
@@ -165,13 +166,21 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Stock updated successfully!');
     }
 
-        public function show($id)
+    public function show($id)
     {
-        $product = Product::with('reviews.user')->findOrFail($id);
-        $user = auth()->user();
+        $response = Http::get("http://localhost:8080/products/{$id}");
 
-        $isWishlisted = $product->wishlistedBy->contains($user);
-        return view('products.show2', compact('product', 'isWishlisted'));
+        if ($response->successful()) {
+            $productData = $response->json();
+            $user = auth()->user();
+
+            // Assuming the API response includes wishlistedBy and discussions data
+            $isWishlisted = $user ? in_array($user->id, array_column($productData['wishlistedBy'], 'id')) : false;
+
+            return view('products.show2', compact('productData', 'isWishlisted'));
+        }
+
+        abort(404, 'Product not found');
     }
 
     public function search(Request $request)

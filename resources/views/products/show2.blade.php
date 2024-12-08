@@ -14,28 +14,28 @@
         <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
           <div class="grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
             <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-              <img class="w-full dark:hidden" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/150' }}" alt="{{ $product->name }}" />
+              <img class="w-full dark:hidden" src="{{ $productData['image'] ? asset('storage/' . $productData['image']) : 'https://via.placeholder.com/150' }}" alt="{{ $productData['name'] }}" />
             </div>
     
             <div class="mt-6 sm:mt-8 lg:mt-0">
               <h1
                 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white"
               >
-                {{ $product->name }}
+                {{ $productData['name'] }}
               </h1>
               <h1>
-                Stock: {{ $product->stock }}
+                Stock: {{ $productData['stock'] }}
               </h1>
               <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
                 <p
                   class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white"
                 >
-                Rp.{{ $product->price }}
+                Rp.{{ $productData['price'] }}
                 </p>
               </div>
     
               <div class="mt-6 gap-4 sm:items-center sm:flex sm:mt-8">
-                <form action="{{ route('wishlist.add', $product->id) }}" method="POST">
+                <form action="{{ route('wishlist.add', $productData['id']) }}" method="POST">
                   @csrf
                   <button
                     type="submit"
@@ -61,7 +61,7 @@
                     {{ $isWishlisted ? 'In Wishlist' : 'Add to Wishlists' }}
                   </button>
                 </form>
-                <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                <form action="{{ route('cart.add', $productData['id']) }}" method="POST">
                   @csrf
                   <button
                     type="submit"
@@ -93,7 +93,7 @@
               <hr class="mt-6 md:my-8 border-gray-200 dark:border-gray-800" />
     
               <p class="mt-6 mb-6 text-gray-500 dark:text-gray-400">
-                {{ $product->description }}
+                {{ $productData['description'] }}
               </p>
             </div>
           </div>
@@ -102,14 +102,14 @@
     <section class="py-8 bg-white md:py-16 dark:bg-gray-900 antialiased">
       <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
           <h2 class="text-2xl font-semibold mb-4 dark:text-white">Reviews</h2>
-          @if($product->reviews->isEmpty())
+          @if(empty($productData['reviews']))
               <p class="text-gray-500 dark:text-gray-400">No reviews yet.</p>
           @else
-              @foreach($product->reviews as $review)
+              @foreach($productData['reviews'] as $review)
                   <div class="mb-4 p-4 border border-gray-200 rounded-md">
-                      <strong class="block">{{ $review->user->name }}</strong>
-                      <span class="text-gray-500">{{ $review->rating }} / 5</span>
-                      <p class="mt-2">{{ $review->comment }}</p>
+                      <strong class="block">{{ $review['user']['name'] }}</strong>
+                      <span class="text-gray-500">{{ $review['rating'] }} / 5</span>
+                      <p class="mt-2">{{ $review['comment'] }}</p>
                   </div>
               @endforeach
           @endif
@@ -126,7 +126,7 @@
               </div>
           @endif
 
-          <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+          <form action="{{ route('reviews.store', $productData['id']) }}" method="POST">
               @csrf
               <div class="mb-4">
                   <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
@@ -140,31 +140,35 @@
           </form>
 
           <h2 class="text-2xl font-semibold mt-8 mb-4 dark:text-white">Diskusi</h2>
-          @foreach($product->discussions as $discussion)
-              <div class="mb-4 p-4 border border-gray-200 rounded-md">
-                  <h5 class="font-bold">{{ $discussion->user->name }} <small class="text-gray-500">{{ $discussion->created_at->format('M Y') }}</small></h5>
-                  <p class="mt-2">{{ $discussion->content }}</p>
-                  <button class="btn btn-link" onclick="toggleReplies({{ $discussion->id }})">Lihat Balasan</button>
-                  <div id="replies-{{ $discussion->id }}" style="display: none;">
-                      @foreach($discussion->replies as $reply)
-                          <div class="mt-2 p-2 border border-gray-200 rounded-md">
-                              <h6 class="font-bold">{{ $reply->user->name }} <small class="text-gray-500">{{ $reply->created_at->format('M Y') }}</small></h6>
-                              <p>{{ $reply->content }}</p>
-                          </div>
-                      @endforeach
-                      <form action="{{ route('discussions.reply', $discussion->id) }}" method="POST" class="mt-2">
-                          @csrf
-                          <div class="form-group">
-                              <textarea name="content" class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" placeholder="Isi komentar disini..." required></textarea>
-                          </div>
-                          <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Balas</button>
-                      </form>
+          @if(isset($productData['discussions']) && !empty($productData['discussions']))
+              @foreach($productData['discussions'] as $discussion)
+                  <div class="mb-4 p-4 border border-gray-200 rounded-md">
+                      <h5 class="font-bold">{{ $discussion['user']['name'] }} <small class="text-gray-500">{{ \Carbon\Carbon::parse($discussion['created_at'])->format('M Y') }}</small></h5>
+                      <p class="mt-2">{{ $discussion['content'] }}</p>
+                      <button class="btn btn-link" onclick="toggleReplies({{ $discussion['id'] }})">Lihat Balasan</button>
+                      <div id="replies-{{ $discussion['id'] }}" style="display: none;">
+                          @foreach($discussion['replies'] as $reply)
+                              <div class="mt-2 p-2 border border-gray-200 rounded-md">
+                                  <h6 class="font-bold">{{ $reply['user']['name'] }} <small class="text-gray-500">{{ \Carbon\Carbon::parse($reply['created_at'])->format('M Y') }}</small></h6>
+                                  <p>{{ $reply['content'] }}</p>
+                              </div>
+                          @endforeach
+                          <form action="{{ route('discussions.reply', $discussion['id']) }}" method="POST" class="mt-2">
+                              @csrf
+                              <div class="form-group">
+                                  <textarea name="content" class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" placeholder="Isi komentar disini..." required></textarea>
+                              </div>
+                              <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Balas</button>
+                          </form>
+                      </div>
                   </div>
-              </div>
-          @endforeach
+              @endforeach
+          @else
+              <p class="text-gray-500 dark:text-gray-400">No discussions yet.</p>
+          @endif
 
           <h2 class="text-2xl font-semibold mt-8 mb-4 dark:text-white">Tambah Pertanyaan</h2>
-          <form action="{{ route('discussions.store', $product->id) }}" method="POST">
+          <form action="{{ route('discussions.store', $productData['id']) }}" method="POST">
               @csrf
               <div class="mb-4">
                   <textarea name="content" class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" placeholder="Isi pertanyaan disini..." required></textarea>

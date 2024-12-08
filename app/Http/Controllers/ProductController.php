@@ -72,15 +72,35 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        Product::create([
+        $price = (int) $request->price;
+        $stock = (int) $request->stock;
+        $category_id = (int) $request->category_id;
+
+        $data = [
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
+            'price' => $price,
+            'stock' => $stock,
             'seller_id' => Auth::id(),
-            'category_id' => $request->category_id,
+            'category_id' => $category_id,
             'image' => $imagePath,
-        ]);
+        ];
+
+        $response = Http::post('http://localhost:8080/products', $data);
+
+        // Buat Testing
+
+        // if ($response->successful()) {
+        //     $result = $response->json();
+        //     dd($result);
+        // } else {
+        //     dd([
+        //         'url' => 'http://localhost:8080/products',
+        //         'data' => $data,
+        //         'response' => $response->body(),
+        //         'status' => $response->status(),
+        //     ]);
+        // }
 
         return redirect()->route('products.index');
     }
@@ -177,7 +197,7 @@ class ProductController extends Controller
             // Assuming the API response includes wishlistedBy and discussions data
             $isWishlisted = $user ? in_array($user->id, array_column($productData['wishlistedBy'], 'id')) : false;
 
-            return view('products.show2', compact('productData', 'isWishlisted'));
+            return view('products.show', compact('productData', 'isWishlisted'));
         }
 
         abort(404, 'Product not found');

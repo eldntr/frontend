@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -15,24 +16,53 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-    
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            if ($user->role == 'seller') {
-                return redirect()->route('products.index');
-            }
-            return redirect()->route('product.index');
-        }
-    
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
+    
+        $response = Http::post('http://localhost:8080/auth/login', [
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+    
+        if ($response->failed()) {
+            return back()->withErrors([
+                'email' => 'Invalid credentials from backend.',
+            ]);
+        } 
+    
+        $data = $response->json();
+        $token = $data['token'];
+
+        $response = Http::withToken($token)->get('http://localhost:8080/user/profile');
+        
+        $userProfile = $response->json();
+
+        $user = User::updateOrCreate(
+            ['email' => $userProfile['email']],
+            [
+                'name' => $userProfile['name'],
+                'role' => $userProfile['role'],
+                'password' => $userProfile['password']
+            ]
+        );
+
+        // session([
+        //     'token' => $token,
+        //     'user' => $userProfile
+        // ]);
+
+        Auth::login($user);
+
+        return redirect()->route('product.index');
+
     }
 
     public function logout()
     {
-        Auth::logout();
+        session()->forget('token');
+        session()->forget('user');
         return redirect('/');
     }
 

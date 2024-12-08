@@ -22,10 +22,12 @@ class CartController extends Controller
 
         $original_price = 0;
 
-        foreach ($cart->items as $item) {
-            $product = $item->product;
-            $product->isWishlisted = $user ? $product->wishlistedBy->contains($user) : false;
-            $original_price += $product->price * $item->quantity;
+        if($cart){
+            foreach ($cart->items as $item) {
+                $product = $item->product;
+                $product->isWishlisted = $user ? $product->wishlistedBy->contains($user) : false;
+                $original_price += $product->price * $item->quantity;
+            }
         }
 
         $total = $original_price - 0;

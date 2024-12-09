@@ -33,5 +33,13 @@
         </div>
     </section>
 
+    <script>
+        @if(session('token'))
+            console.log('Token from session: {{ session('token') }}');
+        @else
+            console.log('No token found in session');
+        @endif
+    </script>
+
 </body>
 </html>

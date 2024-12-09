@@ -44,7 +44,7 @@ Route::get('/', [HomeController::class, 'index'])->name('product.index');
 Route::post('/category/{id}', [HomeController::class, 'categoryFilter'])->name('product.filter');
 
 // Product Routes
-Route::resource('products', ProductController::class)->middleware('auth');
+Route::resource('products', ProductController::class)->middleware('isLogin');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/products/search', [ProductController::class, 'search'])->name('product.search');
 
@@ -56,7 +56,7 @@ Route::resource('categories', CategoryController::class)->only(['store'])->middl
 
 
 // Transaction Routes
-Route::middleware([CheckToken::class])->group(function () {
+Route::middleware(['isLogin'])->group(function () {
     Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
     // Cart Routes
     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');

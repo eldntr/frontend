@@ -36,6 +36,14 @@ class CategoryController extends Controller
         //     ]);
         // }
 
+        $newCategory = $response->json();
+
+        $categories = session('Category', []);
+
+        $categories[] = ['id' => $newCategory['id'], 'name' => $newCategory['name']];
+
+        session(['Category' => $categories]);
+
         return redirect()->back();
     }
 }

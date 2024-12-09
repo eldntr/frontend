@@ -32,9 +32,13 @@
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Category:</label>
                 <select name="category_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-teal-500" required>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
+                    @if(session()->has('category'))
+                        @foreach(session('category') as $category)
+                            <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
+                        @endforeach
+                    @else
+                        <option disabled>No categories available</option>
+                    @endif
                 </select>
             </div>
             <div class="mb-4">

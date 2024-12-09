@@ -14,9 +14,9 @@ class CartController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
-            return redirect()->route('login'); // Pastikan redirect hanya jika user belum login
-        }
+        // if (!$user) {
+        //     return redirect()->route('login'); // Pastikan redirect hanya jika user belum login
+        // }
 
         $cart = $user->carts()->with('items.product')->first();
 

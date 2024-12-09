@@ -22,9 +22,20 @@
               >
                 {{ $productData['name'] }}
               </h1>
-              <h1>
-                Stock: {{ $productData['stock'] }}
+              <h2 class="text-md text-gray-600 dark:text-gray-300">
+                Seller: {{ $productData['seller_name'] }}
+              </h2>
+              <h1 class="flex items-center">
+                <span class="mr-2">Stock:</span>
+                <span class="px-2 py-1 text-sm font-semibold text-white bg-teal-600 rounded">
+                    {{ $productData['stock'] }}
+                </span>
               </h1>
+              @if($productData['stock'] == 0)
+                  <p class="text-red-500">Out of Stock</p>
+              @elseif($productData['stock'] < 5)
+                  <p class="text-yellow-500">Limited Stock Available</p>
+              @endif
               <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
                 <p
                   class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white"

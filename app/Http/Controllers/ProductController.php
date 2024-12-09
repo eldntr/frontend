@@ -197,6 +197,16 @@ class ProductController extends Controller
             }
 
             $productData = $response->json();
+            
+            // Fetch seller information
+            $sellerResponse = Http::get("http://localhost:8080/users/{$productData['seller_id']}");
+            if ($sellerResponse->successful()) {
+                $seller = $sellerResponse->json();
+                $productData['seller_name'] = $seller['name'];
+            } else {
+                $productData['seller_name'] = 'Unknown';
+            }
+
             $user = auth()->user();
 
             // Fetch reviews

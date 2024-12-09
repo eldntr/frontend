@@ -56,6 +56,10 @@
                 <h3 class="mt-4 font-bold text-xl font-medium text-gray-900">{{ Str::limit($item['name'], 30) }}</h3>
             
                 <p class="mt-1.5 font-bold text-md text-gray-700">Rp. {{ $item['price'] }}</p>
+                
+                <p class="mt-1.5 text-md text-gray-700">Stock: {{ $item['stock'] }}</p>
+                <p class="mt-1 text-md text-gray-700">Seller: {{ $item['seller_name'] }}</p>
+                <p class="mt-1 text-md text-gray-700">Average Rating: {{ $item['average_rating'] }}</p>
             
                 <form action="{{ route('cart.add', $item['id']) }}" method="POST" class="mt-4">
                     @csrf

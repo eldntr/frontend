@@ -17,7 +17,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $sellerId = Auth::id();
+        $sellerId = session('user')['id'];
 
         // Hitung Total Produk
         $totalProducts = Product::where('seller_id', $sellerId)->count();
@@ -63,7 +63,7 @@ class ProductController extends Controller
             'description' => 'nullable',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -76,12 +76,16 @@ class ProductController extends Controller
         $stock = (int) $request->stock;
         $category_id = (int) $request->category_id;
 
+        // $categories = session('category', []);
+        // $categoryName = ; // Ganti dengan nama kategori yang ingin dicari
+        // $category = collect($categories)->firstWhere('name', $categoryName);
+
         $data = [
             'name' => $request->name,
             'description' => $request->description,
             'price' => $price,
             'stock' => $stock,
-            'seller_id' => Auth::id(),
+            'seller_id' => session('user')['id'],
             'category_id' => $category_id,
             'image' => $imagePath,
         ];

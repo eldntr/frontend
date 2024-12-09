@@ -38,11 +38,11 @@ class CategoryController extends Controller
 
         $newCategory = $response->json();
 
-        $categories = session('Category', []);
+        $categories = session('category', []);
 
         $categories[] = ['id' => $newCategory['id'], 'name' => $newCategory['name']];
 
-        session(['Category' => $categories]);
+        session(['category' => $categories]);
 
         return redirect()->back();
     }

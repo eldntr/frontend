@@ -52,7 +52,7 @@ Route::get('/products/search', [ProductController::class, 'search'])->name('prod
 Route::post('/products/{product}/reviews', [ProductController::class, 'storeReview'])->name('reviews.store');
 
 // Category Routes
-Route::resource('categories', CategoryController::class)->only(['store'])->middleware('auth');
+Route::resource('categories', CategoryController::class)->only(['store'])->middleware('isLogin');
 
 
 // Transaction Routes

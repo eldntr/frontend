@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\CheckToken;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
@@ -55,7 +56,7 @@ Route::resource('categories', CategoryController::class)->only(['store'])->middl
 
 
 // Transaction Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware([CheckToken::class])->group(function () {
     Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
     // Cart Routes
     Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');

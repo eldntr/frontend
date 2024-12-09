@@ -12,7 +12,7 @@
 
     <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow">
         <h1 class="text-3xl font-bold">Seller Dashboard</h1>
-        <p class="mt-2">Hi, {{ Auth::user()->name }}!</p> <!-- Ganti dengan nama seller -->
+        <p class="mt-2">Hi, {{ session('user')['name'] }}!</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
             <div class="bg-green-100 border border-green-300 rounded-lg p-4 text-center shadow">

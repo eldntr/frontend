@@ -16,6 +16,13 @@ class HomeController extends Controller
         foreach ($products as &$product) {
             $product['isWishlisted'] = $user ? in_array($user->id, array_column($product['wishlistedBy'] ?? [], 'id')) : false;
             $product['category_name'] = $product['category']['name'] ?? 'No Category';
+
+            $seller = Http::get("http://localhost:8080/sellers/{$product['seller_id']}")->json();
+            $product['seller_name'] = $seller['name'] ?? 'Unknown Seller';
+
+            $reviews = Http::get("http://localhost:8080/reviewsproduct/{$product['id']}")->json();
+            $averageRating = count($reviews) > 0 ? array_sum(array_column($reviews, 'rating')) / count($reviews) : 0;
+            $product['average_rating'] = round($averageRating, 2);
         }
 
         return view('home', compact('products'));
@@ -30,6 +37,13 @@ class HomeController extends Controller
         foreach ($products as &$product) {
             $product['isWishlisted'] = $user ? in_array($user->id, array_column($product['wishlistedBy'] ?? [], 'id')) : false;
             $product['category_name'] = $product['category']['name'] ?? 'No Category';
+
+            $seller = Http::get("http://localhost:8080/sellers/{$product['seller_id']}")->json();
+            $product['seller_name'] = $seller['name'] ?? 'Unknown Seller';
+
+            $reviews = Http::get("http://localhost:8080/reviewsproduct/{$product['id']}")->json();
+            $averageRating = count($reviews) > 0 ? array_sum(array_column($reviews, 'rating')) / count($reviews) : 0;
+            $product['average_rating'] = round($averageRating, 2);
         }
 
         return view('home', compact('products'));

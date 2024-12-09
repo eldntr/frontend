@@ -105,6 +105,54 @@
             }
         }
 
+        <div>
+        <canvas id="salesChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        async function fetchSellerSummary(sellerId) {
+            try {
+                const response = await fetch(`http://localhost:8080/seller/${sellerId}/summary`);
+                const summary = await response.json();
+                
+                // Menampilkan grafik
+                displaySalesChart(summary.sales_data);
+            } catch (error) {
+                console.error('Error fetching seller summary:', error);
+            }
+        }
+
+        function displaySalesChart(salesData) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const labels = salesData.map(data => data.Month);
+            const data = salesData.map(data => data.Total);
+
+            const salesChart = new Chart(ctx, {
+                type: 'bar', // Tipe grafik (bar, line, pie, dll)
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Sales per Month',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Ganti dengan ID seller yang sesuai
+        const sellerId = {{ $sellerId }}; // Mengambil ID seller dari variabel yang dikirim dari controller
+        fetchSellerSummary(sellerId);
+
         // Memanggil fungsi untuk menampilkan data
         displaySellerSummary();
         displaySellerProducts();
